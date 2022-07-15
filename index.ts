@@ -26,3 +26,27 @@ export function go(p: any): any {
     return p.then((a: any) => [a, undefined]).catch((e: any) => [undefined, e])
   return [p, undefined]
 }
+
+interface IEventEmitter<E = any, V = any> {
+  on(event: E, callback: (v: V) => void): void
+  off(event: E, callback: (v: V) => void): void
+}
+/**
+ * Return a disposer on event emitter's `on()`.
+ */
+export function on<E = any, V = any>(e: IEventEmitter<E, V>, event: E, callback: (v: V) => void) {
+  e.on(event, callback)
+  return () => e.off(event, callback)
+}
+
+interface IEventTarget<E = any, V = any> {
+  addEventListener(event: E, callback: (v: V) => void): void
+  removeEventListener(event: E, callback: (v: V) => void): void
+}
+/**
+ * Return a disposer on event target's `addEventListener()`.
+ */
+export function addEventListener<E = any, V = any>(e: IEventTarget<E, V>, event: E, callback: (v: V) => void) {
+  e.addEventListener(event, callback)
+  return () => e.removeEventListener(event, callback)
+}
