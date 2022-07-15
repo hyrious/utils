@@ -1,0 +1,7 @@
+{
+  "extends": "@antfu",
+  "rules": {
+    "promise/param-names": "off"
+  },
+  "ignorePatterns": ["/index.js", "/index.js.map"]
+}

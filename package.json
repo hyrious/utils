@@ -1,0 +1,18 @@
+{
+  "name": "@hyrious/utils",
+  "version": "0.1.0",
+  "description": "Common utilities for @hyrious/<package>",
+  "type": "module",
+  "exports": "./index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "repository": "hyrious/utils",
+  "author": "hyrious <hyrious@outlook.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.25.2",
+    "eslint": "^8.19.0",
+    "typescript": "^4.7.4"
+  }
+}
