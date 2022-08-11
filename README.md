@@ -33,8 +33,9 @@ This is super useful for using in UI frameworks.
 ```jsx
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 const foo$ = writable(0);
+const subscribeFoo = foo$.subscribe.bind(foo$);
 function App() {
-  const foo = useSyncExternalStore(foo$.subscribe.bind(foo$), () => foo$.value);
+  const foo = useSyncExternalStore(subscribeFoo, () => foo$.value);
   return <button onClick={() => foo$.set(foo$.value + 1)}>{foo}</button>;
 }
 ```
