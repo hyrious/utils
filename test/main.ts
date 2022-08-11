@@ -1,4 +1,4 @@
-import { spread, template, writable, combine } from "../src";
+import { spread, template, writable, combine, derived } from "../src";
 
 let $tpl = template("<div><input type=number>+<input type=number>=<output></output></div>");
 
@@ -11,7 +11,11 @@ const entries = [
 ] as const;
 
 entries.forEach(([val$, $el]) => val$.subscribe((value) => ($el.value = String(value))));
-combine([foo$, bar$]).subscribe((a) => ($c.textContent = "" + (a[0] + a[1])));
+let sum$ = derived([foo$, bar$], ([foo, bar]) => foo + bar);
+sum$.subscribe((a) => {
+  console.log("render", a);
+  $c.textContent = "" + a;
+});
 
 entries.forEach(([val$, $el]) => ($el.oninput = () => val$.set($el.valueAsNumber)));
 
