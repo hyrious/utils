@@ -27,3 +27,7 @@ export function at<T>(a: T[], i: number): T | _ {
   }
   return a[i];
 }
+
+export type First<T extends any[]> = T extends [infer F extends any, ...any] ? F : never;
+
+export type Last<T extends any[]> = T extends [...any, infer L extends any] ? L : never;

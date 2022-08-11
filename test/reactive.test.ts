@@ -1,5 +1,5 @@
 import { expect, test, vi } from "vitest";
-import { writable, combine, resetAll } from "../src/reactive";
+import { writable, combine, resetAll, connect, Operator, pipe } from "../src/reactive";
 
 test("combine", () => {
   const foo$ = writable(0);
@@ -28,4 +28,41 @@ test("combine", () => {
   expect(foobar$.value).toEqual([foo$.value, bar$.value]);
 
   resetAll([foo$, bar$, foobar$]);
+});
+
+test("connect", () => {
+  const foo$ = writable<number>();
+  const bar$ = writable<number>();
+
+  const callback = vi.fn();
+  bar$.subscribe(callback);
+  connect(foo$, bar$);
+  expect(callback).toBeCalledTimes(0);
+
+  foo$.set(1);
+  expect(callback).toBeCalledWith(1);
+  expect(callback).toBeCalledTimes(1);
+
+  foo$.set(2);
+  expect(callback).toBeCalledWith(2);
+  expect(callback).toBeCalledTimes(2);
+
+  expect(foo$.value).toEqual(bar$.value);
+
+  resetAll([foo$, bar$]);
+});
+
+test("pipe", () => {
+  const foo$ = writable(0);
+
+  const add2: Operator<number> = (f) => (x) => f(x + 2);
+  const mul2: Operator<number> = (f) => (x) => f(x * 2);
+
+  const bar$ = pipe(foo$, [add2, mul2]);
+  expect(bar$.value).toEqual(4);
+
+  foo$.set(2);
+  expect(bar$.value).toEqual(8);
+
+  resetAll([foo$, bar$]);
 });

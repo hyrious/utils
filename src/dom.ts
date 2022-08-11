@@ -31,10 +31,14 @@ export function svg<T extends keyof SVGElementTagNameMap>(tag: T) {
 }
 
 export type QuerySelector = typeof document.querySelector;
-export const $: QuerySelector = /* @__PURE__ */ document.querySelector.bind(document);
+export const $: QuerySelector = function querySelector(selector: any) {
+  return document.querySelector(selector);
+};
 
 export type QuerySelectorAll = typeof document.querySelectorAll;
-export const $$: QuerySelectorAll = /* @__PURE__ */ document.querySelectorAll.bind(document);
+export const $$: QuerySelectorAll = function querySelectorAll(selector: any) {
+  return document.querySelectorAll(selector);
+};
 
 const resolved_promise = /* @__PURE__ */ Promise.resolve();
 export function tick() {
