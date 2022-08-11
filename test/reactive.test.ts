@@ -1,5 +1,5 @@
 import { expect, test, vi } from "vitest";
-import { writable, combine, resetAll, connect, Operator, pipe } from "../src/reactive";
+import { writable, combine, resetAll, connect, Operator, pipe, derived, reaction } from "../src/reactive";
 
 test("combine", () => {
   const foo$ = writable(0);
@@ -30,6 +30,20 @@ test("combine", () => {
   resetAll([foo$, bar$, foobar$]);
 });
 
+test("derived", () => {
+  const foo$ = writable(3);
+  const bar$ = writable(5);
+  const sum$ = derived([foo$, bar$], ([foo, bar]) => foo + bar);
+
+  const callback = vi.fn();
+  sum$.subscribe(callback);
+  expect(callback).toBeCalledWith(8);
+  expect(callback).toBeCalledTimes(1);
+  expect(sum$.value).toEqual(8);
+
+  resetAll([foo$, bar$, sum$]);
+});
+
 test("connect", () => {
   const foo$ = writable<number>();
   const bar$ = writable<number>();
@@ -48,6 +62,16 @@ test("connect", () => {
   expect(callback).toBeCalledTimes(2);
 
   expect(foo$.value).toEqual(bar$.value);
+
+  resetAll([foo$, bar$]);
+
+  const countdown$ = derived([foo$], ([foo], set) => {
+    while (foo-- > 0) set(foo);
+  });
+  const collected: number[] = [];
+  reaction(countdown$, (v) => collected.push(v));
+  foo$.set(3);
+  expect(collected).toEqual([2, 1, 0]);
 
   resetAll([foo$, bar$]);
 });

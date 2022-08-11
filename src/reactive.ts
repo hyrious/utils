@@ -1,6 +1,6 @@
 import { First, Last } from "./array";
 import { pow } from "./math";
-import { safeNotEqual, _ } from "./misc";
+import { isFunction, noop, safeNotEqual, _ } from "./misc";
 
 export interface Readable<T = any> {
   readonly value: T;
@@ -15,6 +15,7 @@ export interface Writable<T = any> extends Readable<T> {
 
 /**
  * This is somewhat a BehaviorSubject in Rx.
+ * You can access the value directly through `.value`.
  */
 export class Val<T = any> implements Writable<T> {
   declare value: T;
@@ -106,9 +107,9 @@ export function combine<Vs extends Readable[] = Readable[]>(values: [...Vs]): Re
   const value = Array(values.length);
   let count = 0;
   let total = pow(2, values.length) - 1;
-  values.forEach(function ($, i) {
+  values.forEach(function (val, i) {
     const bit = pow(2, i);
-    return $.subscribe(function (v) {
+    return val.subscribe(function (v) {
       value[i] = v;
       count |= bit;
       if (count === total) {
@@ -120,21 +121,60 @@ export function combine<Vs extends Readable[] = Readable[]>(values: [...Vs]): Re
 }
 
 /**
- * @example
+ * Same as `combine`, but with transformer.
+ * ```js
+ * let sum$ = derived([foo$, bar$], ([foo, bar]) => foo + bar)
+ * ```
+ */
+export function derived<T = any, Vs extends Readable[] = Readable[]>(
+  values: [...Vs],
+  fn: (vs: ValuesOf<Vs>, set: (v: T) => void) => (() => void) | T | void,
+  value?: T
+): Readable<T> {
+  const auto = fn.length < 2;
+  const inner = writable(value);
+  const set = inner.set.bind(inner);
+  const inputs = Array(values.length) as ValuesOf<Vs>;
+  let clean = noop;
+  let count = 0;
+  let total = pow(2, values.length) - 1;
+  values.forEach(function (val, i) {
+    const bit = pow(2, i);
+    return val.subscribe(function (v) {
+      inputs[i] = v;
+      count |= bit;
+      if (count === total) {
+        clean();
+        const result = fn(inputs, set);
+        if (auto) {
+          set(result as T);
+        } else {
+          clean = isFunction(result) ? result : noop;
+        }
+      }
+    });
+  });
+  return inner;
+}
+
+/**
+ * ```js
  * let foo$ = writable(0)
  * let bar$ = writable()
  * bar$.subscribe(console.log) // no log
  * connect(foo$, bar$)         // logs: 0
  * foo$.set(1)                 // logs: 1
  * assert(foo$.value === bar$.value)
+ * ```
  */
 export function connect(from: Readable, to: Writable) {
   return from.subscribe(to.set.bind(to));
 }
 
 /**
- * @example
+ * ```js
  * let addThree: Operator<number> = sub => value => sub(value + 3)
+ * ```
  */
 export interface Operator<In = any, Out = In> {
   (sub: (v: Out) => void): (v: In) => void;
@@ -143,21 +183,22 @@ type O<i, o> = Operator<i, o>;
 type In<O> = O extends Operator<infer In, any> ? In : never;
 type Out<O> = O extends Operator<any, infer Out> ? Out : never;
 
-function mergeOps<Os extends Operator[]>(ops: [...Os]): Operator<In<First<Os>>, Out<Last<Os>>> {
+function mergeOps<Os extends Operator[] = Operator[]>(ops: [...Os]): Operator<In<First<Os>>, Out<Last<Os>>> {
   return (sub) => ops.reduceRight((value, sub) => sub(value), sub) as any;
 }
 
 /**
- * @example
+ * ```js
  * let foo$ = writable(0)
  * let addThree = sub => value => sub(value + 3)
  * pipe(foo$, [addThree]).subscribe(console.log) // logs: 3
+ * ```
  */
 export function pipe<T, O1>(from: R<T>, ops: [O<T, O1>]): R<O1>;
 export function pipe<T, O1, O2>(from: R<T>, ops: [O<T, O1>, O<O1, O2>]): R<O2>;
 export function pipe<T, O1, O2, O3>(from: R<T>, ops: [O<T, O1>, O<O1, O2>, O<O2, O3>]): R<O3>;
 export function pipe<T, O1, O2, O3, O4>(from: R<T>, ops: [O<T, O1>, O<O1, O2>, O<O2, O3>, O<O3, O4>]): R<O4>;
-export function pipe<T, Os extends Operator[]>(from: R<T>, ops: [...Os]): R<Out<Last<Os>>>;
+export function pipe<T, Os extends Operator[] = Operator[]>(from: R<T>, ops: [...Os]): R<Out<Last<Os>>>;
 export function pipe<T = any, Os extends Operator[] = Operator[]>(from: Readable<T>, ops: [...Os]): any {
   const inner = writable();
   const project = mergeOps(ops)(inner.set.bind(inner)) as (v: T) => void;

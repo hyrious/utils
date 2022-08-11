@@ -1,10 +1,11 @@
 /**
  * Borrow from Solid JS, use with caution! (it uses `innerHTML`)
- * @example
+ * ```js
  * let $btn = template(`<button></button>`)
  * let count$ = writable(0)
  * count$.subscribe(count => { $btn.textContent = count })
  * $btn.onclick = () => update(count$, a => a + 1)
+ * ```
  */
 export function template(html: string, isSVG?: boolean): Element {
   const t = document.createElement("template");
@@ -16,11 +17,12 @@ export function template(html: string, isSVG?: boolean): Element {
 
 /**
  * Borrow from Svelte.
- * @example
+ * ```js
  * let $btn = element('button')
  * let count$ = writable(0)
  * count$.subscribe(count => { $btn.textContent = count })
  * $btn.onclick = () => update(count$, a => a + 1)
+ * ```
  */
 export function element<T extends keyof HTMLElementTagNameMap>(tag: T) {
   return document.createElement(tag);
@@ -46,11 +48,12 @@ export function tick() {
 }
 
 /**
- * @example
+ * ```js
  * const scheduleUpdate = batch(rerender)
  * scheduleUpdate()
  * scheduleUpdate()
  * expect(rerender).toBeCalledTimes(1)
+ * ```
  */
 export function batch(impl: () => void): () => void {
   let scheduled = false;

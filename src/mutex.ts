@@ -1,6 +1,6 @@
 /**
  * Borrow from lib0/mutex.
- * @example
+ * ```js
  * const mux = mutex()
  * mux(() => {
  *   // do something
@@ -10,6 +10,7 @@
  *     // fallback if cannot do something
  *   })
  * })
+ * ```
  */
 export function mutex() {
   let token = true;

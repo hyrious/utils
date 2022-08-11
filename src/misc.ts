@@ -29,9 +29,13 @@ export function safeNotEqual(a: unknown, b: unknown) {
 }
 /**
  * Helper function to extract tuple values.
- * @example
+ * ```js
  * const [str, num] = spread<[string, number]>(document.querySelectorAll('*'))
+ * ```
  */
 export function spread<T = any[]>(args: Iterable<unknown> | ArrayLike<unknown>): T {
   return Array.from(args) as unknown as T;
+}
+export function isFunction(a: unknown): a is Function {
+  return typeof a === "function";
 }
