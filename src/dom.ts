@@ -30,6 +30,12 @@ export function svg<T extends keyof SVGElementTagNameMap>(tag: T) {
   return document.createElementNS("http://www.w3.org/2000/svg", tag);
 }
 
+export type QuerySelector = typeof document.querySelector;
+export const $: QuerySelector = /* @__PURE__ */ document.querySelector.bind(document);
+
+export type QuerySelectorAll = typeof document.querySelectorAll;
+export const $$: QuerySelectorAll = /* @__PURE__ */ document.querySelectorAll.bind(document);
+
 const resolved_promise = /* @__PURE__ */ Promise.resolve();
 export function tick() {
   return resolved_promise;

@@ -50,42 +50,42 @@ export function writable<T = any>(value?: T): Writable<T> {
  * update(count$, c => c + 1)
  * ```
  */
-export function update<T = any>($: Writable<T>, fn: (v: T) => T) {
-  $.set(fn($.value));
+export function update<T = any>(v: Writable<T>, fn: (v: T) => T) {
+  v.set(fn(v.value));
 }
 
 /**
  * Add subscriber to the subscription list but do not invoke it immediately.
  */
-export function reaction<T = any>($: Readable<T>, fn: (v: T) => void) {
-  $.subs.add(fn);
-  return () => $.subs.delete(fn);
+export function reaction<T = any>(v: Readable<T>, fn: (v: T) => void) {
+  v.subs.add(fn);
+  return () => v.subs.delete(fn);
 }
 
 /**
  * Clear all subscriptions.
  */
-export function reset($: Readable) {
-  $.subs.clear();
+export function reset(v: Readable) {
+  v.subs.clear();
 }
 
 /**
  * Clear all subscriptions.
  */
-export function resetAll($$: Readable[]) {
-  $$.forEach(reset);
+export function resetAll(vs: Readable[]) {
+  vs.forEach(reset);
 }
 
 /**
  * Tell if a reactive value is not ready (no first value).
  */
-export function notReady($: Readable) {
-  return $.value === _;
+export function notReady(v: Readable) {
+  return v.value === _;
 }
 
-export type ValueOf<$> = $ extends Readable<infer T> ? T : never;
+export type ValueOf<Val> = Val extends Readable<infer T> ? T : never;
 
-export type ValuesOf<$$ extends Readable[]> = { [K in keyof $$]: ValueOf<$$[K]> };
+export type ValuesOf<Vs extends Readable[]> = { [K in keyof Vs]: ValueOf<Vs[K]> };
 
 /**
  * Maximum 53 inputs! Why? see https://mdn.io/MAX_SAFE_INTEGER
@@ -96,12 +96,12 @@ export type ValuesOf<$$ extends Readable[]> = { [K in keyof $$]: ValueOf<$$[K]> 
  * foobar$.subscribe(console.log) // logs: [0, 'a']
  * ```
  */
-export function combine<$$ extends Readable[] = Readable[]>($$: [...$$]): Readable<[...ValuesOf<$$>]> {
+export function combine<Vs extends Readable[] = Readable[]>(values: [...Vs]): Readable<[...ValuesOf<Vs>]> {
   const inner = writable();
-  const value = Array($$.length);
+  const value = Array(values.length);
   let count = 0;
-  let total = pow(2, $$.length) - 1;
-  $$.forEach(function ($, i) {
+  let total = pow(2, values.length) - 1;
+  values.forEach(function ($, i) {
     const bit = pow(2, i);
     return $.subscribe(function (v) {
       value[i] = v;
