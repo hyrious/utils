@@ -67,7 +67,7 @@ export function update<T = any>(v: Writable<T>, fn: (v: T) => T) {
 /**
  * Add subscriber to the subscription list but do not invoke it immediately.
  */
-export function reaction<T = any>(v: Readable<T>, fn: (v: T) => void) {
+export function reaction<T = any>(v: Readable<T>, fn: (v: T) => void): () => void {
   v.subs.add(fn);
   return () => v.subs.delete(fn);
 }
