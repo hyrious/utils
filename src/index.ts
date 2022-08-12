@@ -1,5 +1,6 @@
 export * from "./array";
 export * from "./dom";
+export * from "./emitter";
 export * from "./math";
 export * from "./misc";
 export * from "./mutex";
