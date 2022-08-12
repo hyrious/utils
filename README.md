@@ -7,6 +7,27 @@ Utility functions I often use.
 Most of the utils are quite simple, I'd suggest you to read the source code directly.
 Some interesting parts will be documented here.
 
+#### observable(sample?)
+
+<details><summary>
+Create a emitter that <code>on()</code> returns a disposer.
+</summary>
+
+```js
+let emitter = observable({ a: 1, b: "" });
+let dispose = emitter.on("a", (a) => console.log(a));
+emitter.emit("a", 2); // logs: 2
+dispose();
+```
+
+To use it in typescript:
+
+```ts
+let emitter = observable<{ a: number; b: string }>();
+```
+
+</details>
+
 #### writable(initial?)
 
 <details><summary>

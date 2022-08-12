@@ -197,7 +197,9 @@ type O<i, o> = Operator<i, o>;
 type In<O> = O extends Operator<infer In, any> ? In : never;
 type Out<O> = O extends Operator<any, infer Out> ? Out : never;
 
-function mergeOps<Os extends Operator[] = Operator[]>(ops: [...Os]): Operator<In<First<Os>>, Out<Last<Os>>> {
+export function mergeOps<Os extends Operator[] = Operator[]>(
+  ops: [...Os]
+): Operator<In<First<Os>>, Out<Last<Os>>> {
   return (sub) => ops.reduceRight((value, sub) => sub(value), sub) as any;
 }
 

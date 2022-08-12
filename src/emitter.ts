@@ -21,7 +21,7 @@ export type EmitterListener<Data, K extends Keys<Data> = Keys<Data>> = Data[K] e
  */
 export class Emitter<Data = any> {
   declare readonly subs: Map<Keys<Data>, Set<EmitterListener<Data, any>>>;
-  constructor(_type: Data) {
+  constructor(_sample?: Data) {
     this.subs = new Map();
   }
   /**
@@ -85,6 +85,6 @@ export class Emitter<Data = any> {
  * dispose()
  * ```
  */
-export function observable<Data = any>(_type: Data): Emitter<Data> {
-  return new Emitter<Data>(_type);
+export function observable<Data = any>(sample?: Data): Emitter<Data> {
+  return new Emitter<Data>(sample);
 }
