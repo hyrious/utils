@@ -48,6 +48,11 @@ foo$.set(+0); // won't trigger listeners because -0 === +0, same as NaN === NaN
 let obj = [];
 foo$.set(obj); // triggers listener(obj)
 foo$.set(obj); // triggers listener(obj) again, because the object may be modified
+
+let bar$ = writable();
+bar$.subscribe(console.log); // no log, because bar$ is not ready
+bar$.set(1); // logs: 1
+bar$.set(undefined); // logs: undefined
 ```
 
 </details>

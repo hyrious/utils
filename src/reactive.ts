@@ -15,7 +15,11 @@ export interface Writable<T = any> extends Readable<T> {
 
 /**
  * This is somewhat a BehaviorSubject in Rx.
- * You can access the value directly through `.value`.
+ * If the value is `undefined`, the immediate invoke of the subscribe callback will not happen.
+ * Use with caution that every `Val` holds a `subs` and a `value`.
+ *
+ * If you want to derive / pipe a Val to another, use `combine`, `derived`, `pipe`, `connect`.
+ * When in doubt, just use `combine` and `derived`.
  */
 export class Val<T = any> implements Writable<T> {
   declare value: T;
@@ -128,11 +132,21 @@ export function combine<Vs extends Readable[] = Readable[]>(values: [...Vs]): Re
  */
 export function derived<T = any, Vs extends Readable[] = Readable[]>(
   values: [...Vs],
-  fn: (vs: ValuesOf<Vs>, set: (v: T) => void) => (() => void) | T | void,
-  value?: T
+  fn: (vs: ValuesOf<Vs>, set: (v: T) => void) => (() => void) | void,
+  initial?: T
+): Readable<T>;
+export function derived<T = any, Vs extends Readable[] = Readable[]>(
+  values: [...Vs],
+  fn: (vs: ValuesOf<Vs>) => T,
+  initial?: T
+): Readable<T>;
+export function derived<T = any, Vs extends Readable[] = Readable[]>(
+  values: [...Vs],
+  fn: (vs: ValuesOf<Vs>, set: (v: T) => void) => any,
+  initial?: T
 ): Readable<T> {
   const auto = fn.length < 2;
-  const inner = writable(value);
+  const inner = writable(initial);
   const set = inner.set.bind(inner);
   const inputs = Array(values.length) as ValuesOf<Vs>;
   let clean = noop;
