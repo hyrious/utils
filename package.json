@@ -1,6 +1,6 @@
 {
   "name": "@hyrious/utils",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Common JS/TS utils by hyrious",
   "type": "module",
   "exports": "./dist/index.js",
