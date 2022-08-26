@@ -21,3 +21,7 @@ export function hash(s: string): number {
   }
   return h;
 }
+
+export function slash(s: string) {
+  return s.replace(/\\/g, "/");
+}
