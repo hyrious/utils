@@ -87,3 +87,10 @@ export function debounce<Args extends unknown[], Ret, Fn extends (...args: Args)
   Object.defineProperty(wrapper, "length", { value: fn.length, configurable: true });
   return wrapper as any;
 }
+export function tap<T>(x: T, f: (x: T) => void): T {
+  f(x);
+  return x;
+}
+export function isDate(x: unknown): x is Date {
+  return Object.prototype.toString.call(x) === "[object Date]";
+}
