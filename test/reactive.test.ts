@@ -90,3 +90,39 @@ test("pipe", () => {
 
   resetAll([foo$, bar$]);
 });
+
+// https://svelte.dev/repl/6218ae0ecf5c455195b4a76d7f0cff9f
+test("intermediate", () => {
+  const a = writable(1);
+  const b = derived([a], ([a]) => a + 1);
+  const events: number[][] = [];
+  const c = derived([a, b], ([a, b]) => {
+    events.push([a, b]);
+    return a + b;
+  });
+  a.set(2);
+
+  // The [1, 3] is an intermediate value, which we may not want to see.
+  // This is because b subscribes a and triggers b.effect before c.effect
+  // and then b triggers its subscribers (c) before a triggers it.
+  // So we can see b's next value before a's next value to pass down to c.
+  expect(events).toEqual([
+    [1, 2],
+    [1, 3], // <--
+    [2, 3],
+  ]);
+  // Because of the simplicity of implementation (just push values down),
+  // I won't treat this behavior as a "bug". If you want to avoid that,
+  // the correct implementation should be like vue / value-enhancer, i.e.:
+  // Combine "push" and "pull" behaviors,
+  // when some value change, it doesn't trigger effects eagerly, but
+  // tells its derivations it was changed.
+  // The real computation happens when you call `.value` of the derivation.
+  // See value-enhancer for more details.
+
+  // Svelte is a bit different, it is more correct than me.
+  // Because when it triggers subscribers, it saves arguments to a queue.
+  // See link above.
+
+  resetAll([a, b, c]);
+});
