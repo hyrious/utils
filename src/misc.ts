@@ -75,7 +75,8 @@ export function isJSON(x: any): boolean {
 }
 export function debounce<Args extends unknown[], Ret, Fn extends (...args: Args) => Ret>(
   fn: Fn,
-  ms = 200
+  ms = 200,
+  name = fn.name
 ): Fn {
   let token = 0; // should be ok in both node and browser
   function wrapper() {
@@ -83,7 +84,7 @@ export function debounce<Args extends unknown[], Ret, Fn extends (...args: Args)
     // @ts-ignore
     token = setTimeout(fn.bind(this, ...arguments), ms);
   }
-  Object.defineProperty(wrapper, "name", { value: fn.name, configurable: true });
+  Object.defineProperty(wrapper, "name", { value: name, configurable: true });
   Object.defineProperty(wrapper, "length", { value: fn.length, configurable: true });
   return wrapper as any;
 }
