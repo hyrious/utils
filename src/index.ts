@@ -6,4 +6,5 @@ export * from "./misc";
 export * from "./mutex";
 export * from "./promise";
 export * from "./reactive";
+export * from "./side-effect";
 export * from "./string";
