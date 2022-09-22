@@ -95,3 +95,17 @@ export function tap<T>(x: T, f: (x: T) => void): T {
 export function isDate(x: unknown): x is Date {
   return Object.prototype.toString.call(x) === "[object Date]";
 }
+export function once<Fn extends (...args: any) => any>(fn: Fn): Fn & { reset: () => void } {
+  let done = false;
+  let result: ReturnType<Fn>;
+  function wrapper() {
+    if (done) return result;
+    done = true;
+    return (result = fn());
+  }
+  Object.defineProperty(wrapper, "name", { value: fn.name, configurable: true });
+  wrapper.reset = function reset() {
+    done = false;
+  };
+  return wrapper as Fn & { reset: () => void };
+}
