@@ -1,10 +1,12 @@
 # @hyrious/utils
 
-Common ![ts][ts] TypeScript utils by [@hyrious][me].
+Common TypeScript utils.
+
+Some of the codes are taken from those big projects:
+
+- [VS Code](https://github.com/microsoft/vscode/tree/main/src/vs/base) (MIT Licensed)
+- [CodeMirror](https://github.com/codemirror/view/blob/main/src/dom.ts) (MIT Licensed)
 
 ## License
 
-MIT @ [hyrious][me]
-
-[ts]: https://api.iconify.design/devicon:typescript.svg "TypeScript Logo"
-[me]: https://github.com/hyrious
+MIT @ [hyrious](https://github.com/hyrious)
