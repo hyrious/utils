@@ -5,6 +5,8 @@
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.format.semicolons": "insert",
   "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+  "javascript.preferences.quoteStyle": "single",
+  "javascript.format.semicolons": "insert",
   "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features",
     "editor.formatOnSave": true

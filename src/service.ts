@@ -31,11 +31,11 @@ function getDependencies(target: Function): { id: IServiceIdentifier<any>, index
   return target[DI_DEPENDENCIES] || [];
 }
 
-const serviceIds = new Map<string, IServiceIdentifier<any>>();
+const serviceIds = /*#__PURE__*/ new Map<string, IServiceIdentifier<any>>();
 
 /**
  * The only valid way to create a {@link IServiceIdentifier service identifier}.
- * If the name was created before, it returns the same instance.
+ * If the name was created before, it returns the same identifier.
  */
 export function createDecorator<T extends IService>(serviceId: string): IServiceIdentifier<T> {
   if (serviceIds.has(serviceId)) {
@@ -68,7 +68,7 @@ type LeadingNonServiceArgs<TArgs extends any[]> =
  * Registry of services.
  */
 export interface IServices {
-  /** Register a singleton service's implementation. */
+  /** Register a singleton service's implementation, it will be lazily created when you {@link get} it. */
   register<T, Services extends IService[]>(id: IServiceIdentifier<T>, ctor: new (...services: Services) => T): void;
   /** Get or create a singleton service. */
   get<T>(id: IServiceIdentifier<T>): T;
@@ -81,7 +81,7 @@ export interface IServices {
   dispose(): void;
 }
 
-export const services: IServices = new class implements IServices {
+export const services: IServices = /*#__PURE__*/ new class implements IServices {
   readonly registry = new Map<IServiceIdentifier<any>, new (...args: any[]) => unknown>();
   readonly services = new Map<IServiceIdentifier<any>, any>();
 
@@ -103,6 +103,12 @@ export const services: IServices = new class implements IServices {
   }
 
   set<T>(id: IServiceIdentifier<T>, service: T): void {
+    if (this.services.has(id)) {
+      const instance = this.services.get(id);
+      if (isDisposable(instance)) {
+        instance.dispose();
+      }
+    }
     this.services.set(id, service);
   }
 
