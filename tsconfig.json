@@ -1,4 +1,5 @@
 {
+  "include": ["src"],
   "extends": "@hyrious/configs/tsconfig.casual.json",
   "compilerOptions": {
     "target": "ES2022",

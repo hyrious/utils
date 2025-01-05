@@ -41,7 +41,7 @@ export interface IServiceLocator extends IDisposable {
   derive(): IServiceLocator;
 
   /**
-   * Dispose all services.
+   * Dispose all services (not including derived ones).
    */
   dispose(): void;
 }
@@ -58,7 +58,7 @@ export class ServiceLocator implements IServiceLocator {
     } else if (this._parent) {
       return this._parent.get(id);
     } else {
-      throw new Error(`Service not found: ${id.toString()}`);
+      throw new Error(`Service not found: ${id}`);
     }
   }
 
