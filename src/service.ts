@@ -80,4 +80,4 @@ export class ServiceLocator implements IServiceLocator {
   }
 }
 
-export const services = /*#__PURE__*/ new ServiceLocator();
+export const services: IServiceLocator = /*#__PURE__*/ new ServiceLocator();

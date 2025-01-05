@@ -4,11 +4,19 @@ import ts from 'typescript';
 import dts from 'rollup-plugin-dts';
 import { Plugin, rollup } from 'rollup';
 import { basename, dirname, extname, join, relative } from 'path';
-import { readdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
+import { rmSync, writeFileSync } from 'fs';
 
 class Output {
   readonly files: Record<string, string> = Object.create(null);
   readonly writeFile: ts.WriteFileCallback = (fileName, text) => {
+    text = text.split('\n').map(line => {
+      let m = line.match(/^[ ]*/)!;
+      let n = Math.floor(m[0].length / 4);
+      if (n) {
+        return '\t'.repeat(n) + line.slice(n * 4);
+      }
+      return line;
+    }).join('\n');
     this.files[relative(process.cwd(), fileName).replaceAll('\\', '/')] = text;
   };
   constructor(fileNames: string[]) {
@@ -50,7 +58,7 @@ const plugin = (ext = '.js'): Plugin => ({
   }
 });
 
-rmSync('dist', { recursive: true });
+rmSync('dist', { recursive: true, force: true });
 
 const build = await rollup({
   input: ['src/index.js'],
@@ -60,11 +68,6 @@ const build = await rollup({
 await build.write({
   file: 'dist/index.js',
   externalLiveBindings: false
-});
-
-await build.write({
-  file: 'dist/index.cjs',
-  format: 'cjs',
 });
 
 await build.write({
@@ -82,16 +85,19 @@ await dtsBuild.write({
   file: 'dist/index.d.ts'
 });
 
-for (let file of readdirSync('dist')) {
-  let full = join('dist', file);
-  let code = readFileSync(full, 'utf8');
-  code = code.split('\n').map(line => {
-    let m = line.match(/^[ ]*/)!;
-    let n = Math.floor(m[0].length / 4);
-    if (n) {
-      return '\t'.repeat(n) + line.slice(n * 4);
-    }
-    return line;
-  }).join('\n');
-  writeFileSync(full, code);
-}
+// Test tree-shaking.
+import esbuild from 'esbuild';
+
+writeFileSync('dist/package.json', '{"sideEffects": true}');
+const { outputFiles: [{ text }] } = await esbuild.build({
+  stdin: {
+    contents: "import './dist/index.js';",
+    resolveDir: process.cwd(),
+  },
+  bundle: true,
+  platform: 'neutral',
+  write: false,
+});
+rmSync('dist/package.json');
+
+console.assert(text == '', 'Tree-shaking failed');
