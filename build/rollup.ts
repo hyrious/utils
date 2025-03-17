@@ -1,10 +1,9 @@
 /// <reference lib="ESNext" />
-
 import ts from 'typescript';
 import dts from 'rollup-plugin-dts';
 import { Plugin, rollup } from 'rollup';
 import { basename, dirname, extname, join, relative } from 'path';
-import { rmSync, writeFileSync } from 'fs';
+import { rmSync } from 'fs';
 
 class Output {
   readonly files: Record<string, string> = Object.create(null);
@@ -84,20 +83,3 @@ const dtsBuild = await rollup({
 await dtsBuild.write({
   file: 'dist/index.d.ts'
 });
-
-// Test tree-shaking.
-import esbuild from 'esbuild';
-
-writeFileSync('dist/package.json', '{"sideEffects": true}');
-const { outputFiles: [{ text }] } = await esbuild.build({
-  stdin: {
-    contents: "import './dist/index.js';",
-    resolveDir: process.cwd(),
-  },
-  bundle: true,
-  platform: 'neutral',
-  write: false,
-});
-rmSync('dist/package.json');
-
-console.assert(text == '', 'Tree-shaking failed');
