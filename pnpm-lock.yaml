@@ -1,0 +1,24 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+pnpmfileChecksum: sha256-XfWakJsG8L5cj/Avjko3QQ4pF1nRoaPUh9HVqiRagpo=
+
+importers:
+
+  .:
+    devDependencies:
+      '@hyrious/configs':
+        specifier: ^0.1.4
+        version: 0.1.4
+
+packages:
+
+  '@hyrious/configs@0.1.4':
+    resolution: {integrity: sha512-EZGGqeBaSl+pngsRVYMyFBgYWFmlSw76UjsZLP8hHwNb0VMufhf4OtULWx5UHM228wJBC3vVZq0Tvqz0zikM8g==}
+
+snapshots:
+
+  '@hyrious/configs@0.1.4': {}
