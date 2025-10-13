@@ -1,0 +1,23 @@
+{
+	"Add file header": {
+		"prefix": ["header", "fileheader"],
+		"body": [
+      "//=============================================================================",
+      "// ${1:$TM_FILENAME}",
+      "//=============================================================================",
+			"$0"
+		],
+		"description": "Banner comment for the top of a file",
+		"scope": "typescript,javascript"
+	},
+	"Define a region": {
+		"prefix": ["region", "endregion"],
+		"body": [
+			"//#region ${1:Description}",
+			"$0",
+			"//#endregion"
+		],
+		"description": "Code folding region",
+		"scope": "typescript,javascript"
+	}
+}

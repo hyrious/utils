@@ -1,20 +1,13 @@
 {
   "files.insertFinalNewline": true,
   "files.trimTrailingWhitespace": true,
-  "javascript.preferences.quoteStyle": "single",
-  "typescript.preferences.quoteStyle": "single",
   "typescript.preferences.importModuleSpecifier": "relative",
-  "javascript.format.semicolons": "insert",
+  "typescript.preferences.importModuleSpecifierEnding": "js",
+  "typescript.preferences.quoteStyle": "single",
   "typescript.format.semicolons": "insert",
-  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
   "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "editor.insertSpaces": false
   },
-  "[javascript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features",
-    "editor.formatOnSave": true
-  },
-  "editor.occurrencesHighlightDelay": 0,
-  "typescript.experimental.expandableHover": true
 }

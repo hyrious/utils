@@ -1,0 +1,5 @@
+.github/
+.vscode/
+tsconfig.json
+pnpm-workspace.yaml
+*.test.ts

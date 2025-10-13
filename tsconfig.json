@@ -1,4 +1,9 @@
 {
-  "include": ["src"],
-  "extends": "@hyrious/configs/tsconfig.casual.json"
+  "extends": "@hyrious/configs/tsconfig.casual.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "rewriteRelativeImportExtensions": true
+  }
 }
