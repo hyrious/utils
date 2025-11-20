@@ -7,7 +7,7 @@ export interface IDisposable<T = any> {
 }
 
 export function isDisposable<E extends any>(thing: E): thing is E & IDisposable {
-	return typeof thing === 'object' && thing !== null && typeof (thing as unknown as IDisposable).dispose === 'function';
+	return typeof thing == 'object' && thing != null && typeof (thing as unknown as IDisposable).dispose == 'function';
 }
 
 export function dispose(disposable: IDisposable): void {
@@ -22,6 +22,9 @@ export function disposeAll(disposables: IDisposable[]): void {
 }
 
 export abstract class Disposable implements IDisposable {
+
+	static readonly None: IDisposable = Object.freeze<IDisposable>({ dispose() { } });
+
 	private _isDisposed = false;
 
 	protected _disposables: IDisposable[] = [];
@@ -48,7 +51,7 @@ export abstract class Disposable implements IDisposable {
 	}
 }
 
-class FunctionDisposable implements IDisposable {
+class FunctionDisposable implements IDisposable<void> {
 	private _isDisposed = false;
 	private readonly _fn: () => void;
 
@@ -65,6 +68,42 @@ class FunctionDisposable implements IDisposable {
 	}
 }
 
-export function toDisposable(fn: () => void): IDisposable {
+export function toDisposable(fn: () => void): IDisposable<void> {
 	return new FunctionDisposable(fn);
+}
+
+export class DisposableStore implements IDisposable<void> {
+	private readonly _toDispose = new Set<IDisposable>();
+	private _isDisposed = false;
+
+	dispose(): void {
+		if (this._isDisposed) {
+			return;
+		}
+		this._isDisposed = true;
+		this.clear();
+	}
+
+	clear(): void {
+		if (this._toDispose.size === 0) {
+			return;
+		}
+		this._toDispose.forEach(item => item.dispose());
+		this._toDispose.clear();
+	}
+
+	add<T extends IDisposable>(item: T): T {
+		if (item === Disposable.None) {
+			return item;
+		}
+		if ((item as unknown as DisposableStore) === this) {
+			throw new Error(`Cannot add self to DisposableStore`);
+		}
+		if (this._isDisposed) {
+			item.dispose();
+		} else {
+			this._toDispose.add(item);
+		}
+		return item;
+	}
 }
