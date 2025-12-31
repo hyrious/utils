@@ -1,9 +1,3 @@
 {
-  "extends": "@hyrious/configs/tsconfig.casual.json",
-  "compilerOptions": {
-    "types": ["node"],
-    "erasableSyntaxOnly": true,
-    "verbatimModuleSyntax": true,
-    "rewriteRelativeImportExtensions": true
-  }
+  "extends": "@hyrious/configs/tsconfig.node.json"
 }

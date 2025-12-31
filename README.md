@@ -11,7 +11,7 @@ I haven't publish the package. So you can just copy-paste files to your repo to 
 - No dependencies.
   - If used to extend some library, it is exported as pure functions.
 - Everything is pure, prefer using classes over closures for logic involving states.
-  - If you like closures, see [wopjs](https://github.com/wopjs/disposable).
+  - If you want minimal bytes, see [wopjs](https://github.com/wopjs/disposable).
 
 Utilities in this package are organized in [the VS Code style](https://github.com/microsoft/vscode/wiki/Source-Code-Organization):
 
